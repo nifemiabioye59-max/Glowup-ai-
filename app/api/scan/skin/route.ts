@@ -3,7 +3,6 @@ import { cookies } from 'next/headers'
 import { analyzeSkin } from '@/lib/openai'
 import { NextResponse } from 'next/server'
 
-export const runtime = 'edge'
 export const maxDuration = 30
 
 export async function POST(request: Request) {
