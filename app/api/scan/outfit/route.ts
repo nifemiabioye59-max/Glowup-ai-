@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 import { analyzeOutfit } from '@/lib/openai'
 import { NextResponse } from 'next/server'
@@ -8,7 +8,7 @@ export const maxDuration = 30
 
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { data: profile } = await supabase.from('profiles').select('subscription_tier, scans_used_this_month').eq('id', user.id).single()
