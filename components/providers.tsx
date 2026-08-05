@@ -30,4 +30,3 @@ export const useSupabase = () => {
   if (!ctx) throw new Error('useSupabase must be used within Providers')
   return { supabase: ctx }
 }
-
