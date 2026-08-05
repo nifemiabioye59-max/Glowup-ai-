@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase'
-import { cookies } from 'next/headers'
 import { analyzeOutfit } from '@/lib/openai'
 import { NextResponse } from 'next/server'
 
