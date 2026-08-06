@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Glow Up AI ✨</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+    <!-- Hidden Admin Trigger (L-shape: top-left corner) -->
+    <div id="admin-trigger" onclick="handleAdminTrigger()"></div>
+    
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('admin-login-modal')">&times;</span>
+            <h2>🔐 Admin Access</h2>
+            <input type="email" id="admin-email" placeholder="Admin Email">
+            <input type="password" id="admin-code" placeholder="Secret Code">
+            <button onclick="adminLogin()">Enter Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Auth Screens -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="logo-section">
+                <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=200&h=200&fit=crop" alt="Glow Up" class="logo-img">
+                <h1>Glow Up AI ✨</h1>
+                <p>Your personal beauty, fitness & wellness companion</p>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+            <div id="login-form" class="auth-form">
+                <input type="email" id="login-email" placeholder="Email">
+                <input type="password" id="login-password" placeholder="Password">
+                <button onclick="login()">Login</button>
+            </div>
+            <div id="signup-form" class="auth-form hidden">
+                <input type="text" id="signup-name" placeholder="Your Name">
+                <input type="email" id="signup-email" placeholder="Email">
+                <input type="password" id="signup-password" placeholder="Password">
+                <button onclick="signup()">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Screen -->
+    <div id="onboarding-screen" class="screen">
+        <div class="onboarding-container">
+            <div id="onboarding-step-1" class="onboarding-step">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop" class="onboard-img">
+                <h2>Hey Beautiful! 💕</h2>
+                <p>Let's get to know you better so we can create your perfect glow-up plan!</p>
+                <div class="friendly-input">
+                    <label>What should we call you?</label>
+                    <input type="text" id="onboard-name" placeholder="Your nickname">
+                </div>
+                <div class="friendly-input">
+                    <label>How young are you? 😊</label>
+                    <input type="number" id="onboard-age" placeholder="Your age">
+                </div>
+                <button onclick="nextOnboarding(2)">Let's Go! →</button>
+            </div>
+            
+            <div id="onboarding-step-2" class="onboarding-step hidden">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop" class="onboard-img">
+                <h2>Tell Us About Your Body 💪</h2>
+                <div class="friendly-input">
+                    <label>What's your current weight? (kg)</label>
+                    <input type="number" id="onboard-weight" placeholder="e.g. 65">
+                </div>
+                <div class="friendly-input">
+                    <label>How tall are you? (cm)</label>
+                    <input type="number" id="onboard-height" placeholder="e.g. 165">
+                </div>
+                <div class="friendly-input">
+                    <label>What's your dream weight? 🎯</label>
+                    <input type="number" id="onboard-goal-weight" placeholder="e.g. 58">
+                </div>
+                <button onclick="nextOnboarding(3)">Next →</button>
+            </div>
+            
+            <div id="onboarding-step-3" class="onboarding-step hidden">
+                <img src="https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=400&h=400&fit=crop" class="onboard-img">
+                <h2>Health Check 🏥</h2>
+                <div class="friendly-input">
+                    <label>Any health issues we should know about?</label>
+                    <p class="sub-label">(Ulcer, chest pain, diabetes, etc. - so we recommend safe foods!)</p>
+                    <textarea id="onboard-health" placeholder="Tell us everything, we're here to help!"></textarea>
+                </div>
+                <div class="friendly-input">
+                    <label>What's your sugar level like? (Optional)</label>
+                    <input type="text" id="onboard-sugar" placeholder="Normal / High / Low / Don't know">
+                </div>
+                <button onclick="nextOnboarding(4)">Almost There! →</button>
+            </div>
+            
+            <div id="onboarding-step-4" class="onboarding-step hidden">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=400&fit=crop" class="onboard-img">
+                <h2>Your Glow Goals ✨</h2>
+                <div class="goal-cards">
+                    <div class="goal-card" onclick="selectGoal(this, 'fitness')">
+                        <img src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=150&h=150&fit=crop">
+                        <span>Get Fit & Toned</span>
+                    </div>
+                    <div class="goal-card" onclick="selectGoal(this, 'skin')">
+                        <img src="https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=150&h=150&fit=crop">
+                        <span>Glowing Skin</span>
+                    </div>
+                    <div class="goal-card" onclick="selectGoal(this, 'hair')">
+                        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=150&h=150&fit=crop">
+                        <span>Healthy Hair</span>
+                    </div>
+                    <div class="goal-card" onclick="selectGoal(this, 'weight-gain')">
+                        <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=150&h=150&fit=crop">
+                        <span>Gain Weight</span>
+                    </div>
+                    <div class="goal-card" onclick="selectGoal(this, 'flat-tummy')">
+                        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=150&h=150&fit=crop">
+                        <span>Flat Tummy</span>
+                    </div>
+                    <div class="goal-card" onclick="selectGoal(this, 'big-butt')">
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=150&h=150&fit=crop">
+                        <span>Big Butt Workout</span>
+                    </div>
+                </div>
+                <button onclick="finishOnboarding()">Start My Glow Up! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="screen">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <img id="user-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop" class="avatar">
+                <div class="user-info">
+                    <span id="user-name">Hey Girl!</span>
+                    <span id="streak-badge">🔥 0 day streak</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span id="premium-badge" class="badge free">FREE</span>
+                <button onclick="showPremiumModal()" class="upgrade-btn">✨ Upgrade</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button onclick="showSection('home')" class="nav-btn active" data-section="home">
+                <i class="fas fa-home"></i><span>Home</span>
+            </button>
+            <button onclick="showSection('fitness')" class="nav-btn" data-section="fitness">
+                <i class="fas fa-dumbbell"></i><span>Fitness</span>
+            </button>
+            <button onclick="showSection('food')" class="nav-btn" data-section="food">
+                <i class="fas fa-utensils"></i><span>Food</span>
+            </button>
+            <button onclick="showSection('hair')" class="nav-btn" data-section="hair">
+                <i class="fas fa-cut"></i><span>Hair</span>
+            </button>
+            <button onclick="showSection('period')" class="nav-btn" data-section="period">
+                <i class="fas fa-calendar-alt"></i><span>Period</span>
+            </button>
+            <button onclick="showSection('market')" class="nav-btn" data-section="market">
+                <i class="fas fa-shopping-bag"></i><span>Shop</span>
+            </button>
+        </nav>
+
+        <!-- Home Section -->
+        <section id="home-section" class="app-section active">
+            <div class="hero-banner">
+                <img src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=600&h=300&fit=crop">
+                <div class="hero-text">
+                    <h2>Ready to Glow Today? ✨</h2>
+                    <p id="daily-quote">"Your body can stand almost anything. It's your mind you have to convince."</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dash-card" onclick="showSection('fitness')">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop">
+                    <div class="dash-info">
+                        <h3>💪 Fitness</h3>
+                        <p id="fitness-progress">Week 1 • Day 1 waiting</p>
+                    </div>
+                </div>
+                <div class="dash-card" onclick="showSection('food')">
+                    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=300&h=200&fit=crop">
+                    <div class="dash-info">
+                        <h3>🥗 Today's Meal</h3>
+                        <p id="meal-status">Have you eaten today?</p>
+                    </div>
+                </div>
+                <div class="dash-card" onclick="showSection('hair')">
+                    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&h=200&fit=crop">
+                    <div class="dash-info">
+                        <h3>💇 Hair Ideas</h3>
+                        <p>Find your perfect style</p>
+                    </div>
+                </div>
+                <div class="dash-card" onclick="showSection('period')">
+                    <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=300&h=200&fit=crop">
+                    <div class="dash-info">
+                        <h3>🌸 Period Tracker</h3>
+                        <p id="period-status">Track your cycle</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-analysis-section">
+                <h3>🤖 Your AI Glow Analysis</h3>
+                <div id="ai-analysis-result" class="ai-card">
+                    <p>Complete your profile to get personalized AI recommendations!</p>
+                </div>
+            </div>
+            
+            <div class="weight-tracker">
+                <h3>📊 Weight Journey</h3>
+                <div class="weight-stats">
+                    <div><span>Start</span><b id="start-weight">--</b></div>
+                    <div><span>Current</span><b id="current-weight">--</b></div>
+                    <div><span>Goal</span><b id="goal-weight-display">--</b></div>
+                </div>
+                <div class="bmi-display">
+                    <p>Your BMI: <b id="bmi-value">--</b></p>
+                    <p id="bmi-status">Complete profile to see</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fitness Section -->
+        <section id="fitness-section" class="app-section">
+            <div class="section-header">
+                <img src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=600&h=250&fit=crop" class="section-banner">
+                <h2>💪 Your Fitness Journey</h2>
+                <p>3-Month Transformation Program</p>
+            </div>
+            
+            <div id="fitness-locked" class="premium-lock hidden">
+                <div class="lock-content">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop">
+                    <h3>🔒 Free Trial Ended</h3>
+                    <p>You've used your 3 free days! Upgrade to continue your glow-up journey.</p>
+                    <button onclick="showPremiumModal()" class="premium-btn">Unlock Premium - ₦5,000/month</button>
+                </div>
+            </div>
+            
+            <div id="fitness-content">
+                <div class="program-selector">
+                    <button onclick="setFitnessGoal('flat-tummy')" class="program-btn" id="btn-flat-tummy">
+                        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=100&h=100&fit=crop">
+                        <span>Flat Tummy</span>
+                    </button>
+                    <button onclick="setFitnessGoal('big-butt')" class="program-btn" id="btn-big-butt">
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=100&h=100&fit=crop">
+                        <span>Big Butt</span>
+                    </button>
+                    <button onclick="setFitnessGoal('weight-gain')" class="program-btn" id="btn-weight-gain">
+                        <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=100&h=100&fit=crop">
+                        <span>Weight Gain</span>
+                    </button>
+                    <button onclick="setFitnessGoal('full-body')" class="program-btn active" id="btn-full-body">
+                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=100&h=100&fit=crop">
+                        <span>Full Body</span>
+                    </button>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-info">
+                        <span id="current-week">Week 1</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="fitness-progress-bar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="workout-container">
+                    <!-- Workouts injected by JS -->
+                </div>
+                
+                <div id="week-complete-modal" class="modal">
+                    <div class="modal-content congrats">
+                        <h2>🎉 Congratulations!</h2>
+                        <p>You crushed Week <span id="completed-week">1</span>!</p>
+                        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&h=200&fit=crop" class="congrats-img">
+                        <div class="week-checkin">
+                            <label>What's your current weight now? (kg)</label>
+                            <input type="number" id="week-weight" placeholder="Current weight">
+                            <label>How did the workouts feel?</label>
+                            <div class="feel-buttons">
+                                <button onclick="setWorkoutFeel('easy')">😊 Easy</button>
+                                <button onclick="setWorkoutFeel('okay')">😐 Okay</button>
+                                <button onclick="setWorkoutFeel('hard')">😰 Hard</button>
+                            </div>
+                            <button onclick="submitWeekComplete()">Unlock Next Week →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Food Section -->
+        <section id="food-section" class="app-section">
+            <div class="section-header">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&h=250&fit=crop" class="section-banner">
+                <h2>🥗 Glow Up Kitchen</h2>
+                <p>Delicious recipes from around the world</p>
+            </div>
+            
+            <div class="food-categories">
+                <button onclick="filterFood('all')" class="food-cat active">All</button>
+                <button onclick="filterFood('nigeria')" class="food-cat">🇳🇬 Nigeria</button>
+                <button onclick="filterFood('ghana')" class="food-cat">🇬🇭 Ghana</button>
+                <button onclick="filterFood('usa')" class="food-cat">🇺🇸 USA</button>
+                <button onclick="filterFood('italy')" class="food-cat">🇮🇹 Italy</button>
+                <button onclick="filterFood('india')" class="food-cat">🇮🇳 India</button>
+                <button onclick="filterFood('mexico')" class="food-cat">🇲🇽 Mexico</button>
+                <button onclick="filterFood('korea')" class="food-cat">🇰🇷 Korea</button>
+            </div>
+            
+            <div class="health-filter">
+                <p>Filter by your health needs:</p>
+                <div class="health-tags">
+                    <span onclick="filterByHealth('all')" class="health-tag active">All</span>
+                    <span onclick="filterByHealth('ulcer')" class="health-tag">Ulcer Safe</span>
+                    <span onclick="filterByHealth('diabetes')" class="health-tag">Diabetes Friendly</span>
+                    <span onclick="filterByHealth('weight-gain')" class="health-tag">Weight Gain</span>
+                    <span onclick="filterByHealth('weight-loss')" class="health-tag">Weight Loss</span>
+                    <span onclick="filterByHealth('chest-pain')" class="health-tag">Heart Healthy</span>
+                </div>
+            </div>
+            
+            <div id="food-grid" class="food-grid">
+                <!-- Food cards injected by JS -->
+            </div>
+            
+            <!-- Food Detail Modal -->
+            <div id="food-detail-modal" class="modal">
+                <div class="modal-content food-detail">
+                    <span class="close" onclick="closeModal('food-detail-modal')">&times;</span>
+                    <img id="food-detail-img" src="">
+                    <h2 id="food-detail-name"></h2>
+                    <div class="food-meta">
+                        <span id="food-detail-country"></span>
+                        <span id="food-detail-time"></span>
+                        <span id="food-detail-calories"></span>
+                    </div>
+                    <div class="food-section">
+                        <h3>🛒 Ingredients</h3>
+                        <ul id="food-detail-ingredients"></ul>
+                        <button onclick="askIngredientSource()" class="ask-ai-btn">🤖 Ask AI: Where to find these ingredients?</button>
+                    </div>
+                    <div class="food-section">
+                        <h3>👩‍🍳 Step-by-Step Instructions</h3>
+                        <div id="food-detail-steps"></div>
+                    </div>
+                    <div class="food-section">
+                        <h3>💡 Health Benefits</h3>
+                        <p id="food-detail-health"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Meal Reminder -->
+            <div class="meal-reminder">
+                <h3>⏰ Meal Reminders</h3>
+                <div id="meal-reminders-list">
+                    <div class="reminder-item">
+                        <span>🌅 Breakfast</span>
+                        <span id="breakfast-status">Not eaten</span>
+                        <button onclick="markMealEaten('breakfast')">Mark Eaten</button>
+                    </div>
+                    <div class="reminder-item">
+                        <span>🌞 Lunch</span>
+                        <span id="lunch-status">Not eaten</span>
+                        <button onclick="markMealEaten('lunch')">Mark Eaten</button>
+                    </div>
+                    <div class="reminder-item">
+                        <span>🌙 Dinner</span>
+                        <span id="dinner-status">Not eaten</span>
+                        <button onclick="markMealEaten('dinner')">Mark Eaten</button>
+                    </div>
+                </div>
+                <button onclick="askDietician()" class="dietician-btn">👩‍⚕️ Speak with a Dietician</button>
+            </div>
+        </section>
+
+        <!-- Hair Section -->
+        <section id="hair-section" class="app-section">
+            <div class="section-header">
+                <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=250&fit=crop" class="section-banner">
+                <h2>💇 Hair Style Studio</h2>
+                <p>Find your perfect look</p>
+            </div>
+            
+            <div class="hair-filters">
+                <button onclick="filterHair('all')" class="hair-filter active">All</button>
+                <button onclick="filterHair('braids')" class="hair-filter">Braids</button>
+                <button onclick="filterHair('weaves')" class="hair-filter">Weaves</button>
+                <button onclick="filterHair('natural')" class="hair-filter">Natural</button>
+                <button onclick="filterHair('wigs')" class="hair-filter">Wigs</button>
+                <button onclick="filterHair('short')" class="hair-filter">Short</button>
+                <button onclick="filterHair('long')" class="hair-filter">Long</button>
+                <button onclick="filterHair('curly')" class="hair-filter">Curly</button>
+            </div>
+            
+            <div class="hair-skin-tone">
+                <p>Your skin tone:</p>
+                <div class="tone-options">
+                    <div onclick="setSkinTone('dark')" class="tone dark"></div>
+                    <div onclick="setSkinTone('brown')" class="tone brown"></div>
+                    <div onclick="setSkinTone('light')" class="tone light"></div>
+                    <div onclick="setSkinTone('fair')" class="tone fair"></div>
+                </div>
+            </div>
+            
+            <div class="face-scan-section">
+                <h3>📸 Try On a Style</h3>
+                <p>Upload your photo + budget, and AI will suggest styles that fit you!</p>
+                <div class="scan-upload">
+                    <input type="file" id="face-upload" accept="image/*" onchange="handleFaceUpload(event)">
+                    <label for="face-upload" class="upload-label">
+                        <i class="fas fa-camera"></i>
+                        <span>Tap to upload your photo</span>
+                    </label>
+                    <img id="face-preview" class="face-preview hidden">
+                </div>
+                <input type="number" id="hair-budget" placeholder="Your budget (₦)">
+                <button onclick="analyzeFaceForHair()" class="analyze-btn">✨ AI Analyze My Look</button>
+                <div id="hair-recommendation"></div>
+            </div>
+            
+            <div id="hair-grid" class="hair-grid">
+                <!-- Hair cards injected by JS -->
+            </div>
+            
+            <!-- Hair Detail Modal -->
+            <div id="hair-detail-modal" class="modal">
+                <div class="modal-content hair-detail">
+                    <span class="close" onclick="closeModal('hair-detail-modal')">&times;</span>
+                    <img id="hair-detail-img" src="">
+                    <h2 id="hair-detail-name"></h2>
+                    <div class="hair-meta">
+                        <span id="hair-detail-type"></span>
+                        <span id="hair-detail-length"></span>
+                        <span id="hair-detail-time"></span>
+                    </div>
+                    <div class="hair-section">
+                        <h3>💇 How to Make This Style</h3>
+                        <div id="hair-detail-steps"></div>
+                    </div>
+                    <div class="hair-section">
+                        <h3>🛍️ Estimated Cost</h3>
+                        <p id="hair-detail-cost"></p>
+                    </div>
+                    <div class="hair-section">
+                        <h3>⏱️ Maintenance</h3>
+                        <p id="hair-detail-maintain"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Period Section -->
+        <section id="period-section" class="app-section">
+            <div class="section-header">
+                <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&h=250&fit=crop" class="section-banner">
+                <h2>🌸 Period Tracker</h2>
+                <p>Understand your cycle, love your body</p>
+            </div>
+            
+            <div id="period-locked" class="premium-lock hidden">
+                <div class="lock-content">
+                    <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=200&h=200&fit=crop">
+                    <h3>🔒 Free Scans Used</h3>
+                    <p>You've used your 3 free period calculations. Upgrade for unlimited tracking!</p>
+                    <button onclick="showPremiumModal()" class="premium-btn">Unlock Premium - ₦5,000/month</button>
+                </div>
+            </div>
+            
+            <div id="period-content">
+                <div class="period-inputs">
+                    <div class="input-group">
+                        <label>When did your period START? 📅</label>
+                        <input type="date" id="period-start">
+                    </div>
+                    <div class="input-group">
+                        <label>When did it END? 📅</label>
+                        <input type="date" id="period-end">
+                    </div>
+                    <div class="input-group">
+                        <label>How long is your usual cycle? (days)</label>
+                        <input type="number" id="cycle-length" value="28" min="21" max="35">
+                    </div>
+                    <button onclick="calculatePeriod()" class="calc-btn">Calculate My Cycle 🔮</button>
+                </div>
+                
+                <div id="period-result" class="period-result hidden">
+                    <div class="cycle-wheel">
+                        <div class="wheel-center">
+                            <span id="days-until">--</span>
+                            <small>days until next</small>
+                        </div>
+                    </div>
+                    <div class="period-dates">
+                        <div><span>Next Period:</span><b id="next-period-date">--</b></div>
+                        <div><span>Ovulation:</span><b id="ovulation-date">--</b></div>
+                        <div><span>Fertile Window:</span><b id="fertile-date">--</b></div>
+                    </div>
+                </div>
+                
+                <div class="period-symptoms">
+                    <h3>How are you feeling today? 💭</h3>
+                    <div class="symptom-grid">
+                        <button onclick="logSymptom('cramps')" class="symptom-btn">😣 Cramps</button>
+                        <button onclick="logSymptom('moody')" class="symptom-btn">😤 Moody</button>
+                        <button onclick="logSymptom('bloating')" class="symptom-btn">🤰 Bloating</button>
+                        <button onclick="logSymptom('tired')" class="symptom-btn">😴 Tired</button>
+                        <button onclick="logSymptom('headache')" class="symptom-btn">🤕 Headache</button>
+                        <button onclick="logSymptom('acne')" class="symptom-btn">😫 Acne</button>
+                    </div>
+                </div>
+                
+                <div class="period-reminders">
+                    <h3>⏰ Period Reminders</h3>
+                    <div class="reminder-toggle">
+                        <label>Remind me 3 days before</label>
+                        <input type="checkbox" id="remind-3days" onchange="saveReminder()">
+                    </div>
+                    <div class="reminder-toggle">
+                        <label>Remind me on start day</label>
+                        <input type="checkbox" id="remind-start" onchange="saveReminder()">
+                    </div>
+                    <div class="pain-check">
+                        <label>Is your period usually painful?</label>
+                        <select id="period-pain" onchange="savePeriodPain()">
+                            <option value="no">No pain</option>
+                            <option value="mild">Mild pain</option>
+                            <option value="moderate">Moderate pain</option>
+                            <option value="severe">Severe pain</option>
+                        </select>
+                    </div>
+                    <div class="doctor-check">
+                        <label>Have you seen a doctor about period issues?</label>
+                        <select id="doctor-visit" onchange="saveDoctorVisit()">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                            <option value="planning">Planning to</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marketplace Section -->
+        <section id="market-section" class="app-section">
+            <div class="section-header">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=250&fit=crop" class="section-banner">
+                <h2>🛍️ Glow Up Market</h2>
+                <p>Beauty & body enhancement products</p>
+            </div>
+            
+            <div class="market-tabs">
+                <button onclick="showMarketTab('buy')" class="market-tab active">Buy Products</button>
+                <button onclick="showMarketTab('sell')" class="market-tab">Sell Your Product</button>
+            </div>
+            
+            <div id="market-buy" class="market-panel">
+                <div class="market-categories">
+                    <button onclick="filterMarket('all')" class="mcat active">All</button>
+                    <button onclick="filterMarket('skincare')" class="mcat">Skincare</button>
+                    <button onclick="filterMarket('haircare')" class="mcat">Hair Care</button>
+                    <button onclick="filterMarket('body')" class="mcat">Body Enhancement</button>
+                    <button onclick="filterMarket('makeup')" class="mcat">Makeup</button>
+                    <button onclick="filterMarket('supplements')" class="mcat">Supplements</button>
+                </div>
+                <div id="market-grid" class="market-grid">
+                    <!-- Products injected by JS -->
+                </div>
+            </div>
+            
+            <div id="market-sell" class="market-panel hidden">
+                <div class="sell-form">
+                    <h3>📦 Upload Your Product</h3>
+                    <p class="sell-info">Your product will be reviewed by admin before going live.</p>
+                    <input type="text" id="sell-name" placeholder="Product Name">
+                    <input type="number" id="sell-price" placeholder="Price (₦)">
+                    <select id="sell-category">
+                        <option value="">Select Category</option>
+                        <option value="skincare">Skincare</option>
+                        <option value="haircare">Hair Care</option>
+                        <option value="body">Body Enhancement</option>
+                        <option value="makeup">Makeup</option>
+                        <option value="supplements">Supplements</option>
+                    </select>
+                    <textarea id="sell-desc" placeholder="Product Description"></textarea>
+                    <div class="sell-image-upload">
+                        <input type="file" id="sell-image" accept="image/*" onchange="previewSellImage(event)">
+                        <label for="sell-image">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Upload Product Image</span>
+                        </label>
+                        <img id="sell-preview" class="hidden">
+                    </div>
+                    <button onclick="submitProduct()" class="submit-sell">Submit for Approval</button>
+                </div>
+            </div>
+            
+            <!-- Product Detail / Buy Modal -->
+            <div id="product-buy-modal" class="modal">
+                <div class="modal-content product-buy">
+                    <span class="close" onclick="closeModal('product-buy-modal')">&times;</span>
+                    <img id="buy-product-img" src="">
+                    <h2 id="buy-product-name"></h2>
+                    <p id="buy-product-price" class="price"></p>
+                    <p id="buy-product-desc"></p>
+                    <div class="buy-actions">
+                        <button onclick="payWithPaystack()" class="pay-btn">💳 Buy Now with Paystack</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="screen">
+            <div class="admin-header">
+                <h2>👑 Admin Dashboard</h2>
+                <button onclick="logoutAdmin()" class="logout-btn">Logout</button>
+            </div>
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <span class="stat-num" id="admin-users">0</span>
+                    <span class="stat-label">Users</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="admin-products">0</span>
+                    <span class="stat-label">Products</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="admin-pending">0</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="admin-revenue">₦0</span>
+                    <span class="stat-label">Revenue</span>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>⏳ Pending Products</h3>
+                <div id="pending-products" class="pending-list">
+                    <!-- Pending products -->
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>📊 All Products</h3>
+                <div id="admin-all-products" class="admin-product-list">
+                    <!-- All products -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Modal -->
+        <div id="premium-modal" class="modal">
+            <div class="modal-content premium">
+                <span class="close" onclick="closeModal('premium-modal')">&times;</span>
+                <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=150&h=150&fit=crop" class="premium-img">
+                <h2>✨ Go Premium</h2>
+                <p>Unlock your full glow-up potential!</p>
+                <ul class="premium-features">
+                    <li>💪 Full 3-Month Fitness Program</li>
+                    <li>🥗 Unlimited Recipes & Meal Plans</li>
+                    <li>🌸 Unlimited Period Tracking</li>
+                    <li>💇 AI Hair Style Analysis</li>
+                    <li>👩‍⚕️ Dietician Consultations</li>
+                    <li>📊 Advanced Progress Tracking</li>
+                </ul>
+                <div class="pricing">
+                    <div class="price-card">
+                        <h3>Monthly</h3>
+                        <p class="amount">₦5,000<span>/month</span></p>
+                        <button onclick="subscribe('monthly')">Subscribe</button>
+                    </div>
+                    <div class="price-card popular">
+                        <span class="badge">BEST VALUE</span>
+                        <h3>3 Months</h3>
+                        <p class="amount">₦12,000<span>/3 months</span></p>
+                        <button onclick="subscribe('quarterly')">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dietician Modal -->
+        <div id="dietician-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('dietician-modal')">&times;</span>
+                <h2>👩‍⚕️ Speak with a Dietician</h2>
+                <p>Fill in your details and a dietician will contact you within 24 hours!</p>
+                <input type="text" id="diet-name" placeholder="Your Name">
+                <input type="email" id="diet-email" placeholder="Email">
+                <input type="tel" id="diet-phone" placeholder="Phone Number">
+                <textarea id="diet-message" placeholder="Tell us about your diet goals and concerns..."></textarea>
+                <button onclick="submitDieticianRequest()">Request Consultation</button>
+            </div>
+        </div>
+
+        <!-- Ingredient Source Modal -->
+        <div id="ingredient-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('ingredient-modal')">&times;</span>
+                <h2>🛒 Where to Find Ingredients</h2>
+                <p>Tell us your country so we can help you find these ingredients!</p>
+                <input type="text" id="user-country" placeholder="Which country are you in?">
+                <button onclick="getIngredientSource()">Find Ingredients</button>
+                <div id="ingredient-source-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
