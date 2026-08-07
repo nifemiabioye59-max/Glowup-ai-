@@ -2,14 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body { @apply bg-cream text-gray-900 antialiased; }
-  h1, h2, h3 { @apply font-display tracking-tight; }
+body {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fff 100%);
+  min-height: 100vh;
 }
 
-@layer components {
-  .btn-primary { @apply inline-flex items-center justify-center rounded-xl bg-glow-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-glow-600 active:scale-95 disabled:opacity-50; }
-  .btn-secondary { @apply inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-glow-700 shadow-sm ring-1 ring-glow-200 transition-all hover:bg-glow-50; }
-  .input-glow { @apply block w-full rounded-xl border-0 py-3 px-4 text-sm text-gray-900 shadow-sm ring-1 ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-glow-500; }
-  .card { @apply rounded-3xl bg-white p-6 shadow-lg border border-gray-100; }
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(236, 72, 153, 0.15);
+}
+
+.pink-gradient {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
