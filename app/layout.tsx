@@ -1,20 +1,39 @@
-import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+'use client'
+
 import './globals.css'
-import { Providers } from '@/components/providers'
+import { Inter } from 'next/font/google'
+import { useEffect } from 'react'
+import Navbar from '@/components/Navbar'
+import AdminPanel from '@/components/AdminPanel'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' })
+const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'GLOWUP.AI — Snap. Style. Glow. Repeat.',
-  description: 'AI-powered personal stylist, skin consultant, and beauty advisor.',
-}
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'l' || e.key === 'L') {
+        const panel = document.getElementById('admin-panel')
+        if (panel) {
+          panel.style.display = panel.style.display === 'none' ? 'flex' : 'none'
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="min-h-screen"><Providers>{children}</Providers></body>
+    <html lang="en">
+      <body className={inter.className}>
+        <Navbar />
+        <AdminPanel />
+        {children}
+      </body>
     </html>
   )
 }
+
