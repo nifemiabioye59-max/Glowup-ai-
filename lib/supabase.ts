@@ -1,26 +1,6 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 
-export function createClient() {
-  const cookieStore = cookies()
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Called from a Server Component — can be ignored
-          }
-        },
-      },
-    }
-  )
-}
+const supabaseUrl = process.env.https://heycetkerfqyskkmmwafa.supabase.co || ''
+const supabaseKey = process.env.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhleWNldGtlcmZxeXNra213YWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NTU1MDcsImV4cCI6MjEwMTMzMTUwN30.-IQLcezimH4ohoKW62mIWLXs7kQG4rC4SlwH6tiSIek || ''
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
